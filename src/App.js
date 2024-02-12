@@ -3,47 +3,52 @@ import styles from "./App.module.css";
 import { useState, useEffect } from "react";
 
 function App() {
-  const [toDo, setToDo] = useState("");
-  const [toDos, setToDos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [coins, setCoins] = useState([""]);
+  const [index, setIndex] = useState(0);
+  const [input, setInput] = useState(0);
+  const [coinsConverted, setCoinsConverted] = useState(0);
+  const onSelect = (event) => {
+    setIndex(event.target.value);
+  };
   const onChange = (event) => {
-    setToDo(event.target.value);
+    setInput(event.target.value);
+    setCoinsConverted((input / coins[index].quotes.USD.price).toFixed(4));
   };
-  const onSubmit = (event) => {
-    event.preventDefault();
-    if (toDo === "") return;
-    setToDo("");
-    setToDos((currentArray) => [...currentArray, toDo]);
-  };
-  const deleteBtn = (event) => {
-    const target = event.target.parentElement;
-    setToDos(
-      toDos.filter((item, index) => {
-        return index !== parseInt(target.id);
-      })
-    );
-    console.log(toDos);
-  };
+  useEffect(() => {
+    fetch("https://api.coinpaprika.com/v1/tickers")
+      .then((response) => response.json())
+      .then((json) => {
+        setCoins(json);
+        setLoading(false);
+      });
+  }, []);
   return (
     <div>
-      <h1>My To Dos ({toDos.length})</h1>
-      <form onSubmit={onSubmit}>
+      <h1>The Coins! {loading ? "" : `(${coins.length})`}</h1>
+      {loading ? (
+        <strong>Loading...</strong>
+      ) : (
+        <select value={index} onChange={onSelect}>
+          {coins.map((coin) => (
+            <option key={coin.id} value={coin.rank - 1}>
+              {coin.name} ({coin.symbol}): {coin.quotes.USD.price} USD
+            </option>
+          ))}
+        </select>
+      )}
+      <div>
         <input
-          value={toDo}
           onChange={onChange}
-          type="text"
-          placeholder="Write you to do."
+          type="number"
+          placeholder="Dollars you have"
         ></input>
-        <button>Add To Do</button>
-      </form>
-      <hr />
-      <ul>
-        {toDos.map((toDo, index) => (
-          <li key={index} id={index}>
-            {toDo}
-            <button onClick={deleteBtn}>✕</button>
-          </li>
-        ))}
-      </ul>
+      </div>
+      <div>
+        <h3>
+          You have {coinsConverted} {coins[index].name}s
+        </h3>
+      </div>
     </div>
   );
 }
