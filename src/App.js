@@ -2,23 +2,48 @@ import Button from "./Button";
 import styles from "./App.module.css";
 import { useState, useEffect } from "react";
 
-function Hello() {
-  useEffect(() => {
-    console.log("Created :)");
-    return () => {
-      console.log("Destroyed :0");
-    };
-  }, []);
-  return <h1>Heello</h1>;
-}
-
 function App() {
-  const [showing, setShowing] = useState(false);
-  const onClick = () => setShowing((prev) => !prev);
+  const [toDo, setToDo] = useState("");
+  const [toDos, setToDos] = useState([]);
+  const onChange = (event) => {
+    setToDo(event.target.value);
+  };
+  const onSubmit = (event) => {
+    event.preventDefault();
+    if (toDo === "") return;
+    setToDo("");
+    setToDos((currentArray) => [...currentArray, toDo]);
+  };
+  const deleteBtn = (event) => {
+    const target = event.target.parentElement;
+    setToDos(
+      toDos.filter((item, index) => {
+        return index !== parseInt(target.id);
+      })
+    );
+    console.log(toDos);
+  };
   return (
     <div>
-      {showing ? <Hello /> : null}
-      <button onClick={onClick}>{showing ? "HIDE" : "SHOW"}</button>
+      <h1>My To Dos ({toDos.length})</h1>
+      <form onSubmit={onSubmit}>
+        <input
+          value={toDo}
+          onChange={onChange}
+          type="text"
+          placeholder="Write you to do."
+        ></input>
+        <button>Add To Do</button>
+      </form>
+      <hr />
+      <ul>
+        {toDos.map((toDo, index) => (
+          <li key={index} id={index}>
+            {toDo}
+            <button onClick={deleteBtn}>✕</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
