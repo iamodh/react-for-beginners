@@ -8,12 +8,15 @@ function App() {
   const [index, setIndex] = useState(0);
   const [input, setInput] = useState(0);
   const [coinsConverted, setCoinsConverted] = useState(0);
+  useEffect(() => {
+    if (!loading)
+      setCoinsConverted((input / coins[index].quotes.USD.price).toFixed(4));
+  }, [input, index]);
   const onSelect = (event) => {
     setIndex(event.target.value);
   };
   const onChange = (event) => {
     setInput(event.target.value);
-    setCoinsConverted((input / coins[index].quotes.USD.price).toFixed(4));
   };
   useEffect(() => {
     fetch("https://api.coinpaprika.com/v1/tickers")
