@@ -14,7 +14,7 @@ function Detail() {
   };
   useEffect(() => {
     getDetail();
-  });
+  }, []);
   return (
     <div>
       {loading ? (
