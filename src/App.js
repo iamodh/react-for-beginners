@@ -3,7 +3,7 @@ import Detail from "./routes/Detail";
 import Home from "./routes/Home";
 function App() {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <Switch>
         <Route path="/abot-us">
           <h1>Hello</h1>
